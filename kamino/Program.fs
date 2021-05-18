@@ -56,9 +56,9 @@ type Cmd =
             | Output _ -> "specify the output folder to clone to" 
             | Token _ -> "specify your access token"
 
-let help = """Oggy                                GitLab Organisation Cloner
+let help = """Kamino                                GitLab Organisation Cloner
 ----------------------------------------------------------
-Usage: oggy -b my-gitlab.com -o C:\Development\Git -g 42 -t "xT0K3Nx4CC355x"
+Usage: kamino -b my-gitlab.com -o C:\Development\Git -g 42 -t "xT0K3Nx4CC355x"
 """
 
 [<EntryPoint>]
@@ -66,9 +66,9 @@ let main argv =
     let processName = 
         let name = IO.Path.GetFileNameWithoutExtension (Diagnostics.Process.GetCurrentProcess().MainModule.FileName )
         if String.Equals(name, "dotnet", StringComparison.OrdinalIgnoreCase) then
-            "dotnet oggy"
+            "dotnet kamino"
         else
-            "oggy"
+            "kamino"
 
     let parser = ArgumentParser<Cmd>(programName = processName)
     try

@@ -7,9 +7,9 @@
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>botsay</ToolCommandName>
     <PackageOutputPath>./nupkg</PackageOutputPath>
-  
-      <Copyright>Copyright 2021 © Alois de Gouvello. All rights reserved.</Copyright>
-    <PackageLicenseExpression>AGPL-3.0</PackageLicenseExpression>
+
+    <Copyright>Copyright 2021 © Alois de Gouvello. All rights reserved.</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
