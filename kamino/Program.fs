@@ -57,8 +57,8 @@ type Cmd =
             | Token _ -> "specify your access token"
 
 let help = """Kamino                                GitLab Organisation Cloner
-----------------------------------------------------------
-Usage: kamino -b my-gitlab.com -o C:\Development\Git -g 42 -t "xT0K3Nx4CC355x"
+----------------------------------------------------------------
+Usage: kamino -b my-gitlab.com -o C:\Development\Git\ -g 42 -t xT0K3Nx4CC355x
 """
 
 [<EntryPoint>]
