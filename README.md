@@ -6,13 +6,19 @@ Clone an organisation from GitLab
 
 Install kamino as a global dotnet tool
 
-``` bash
+```bash
 dotnet tool install kamino -g
+```
+
+or update it with
+
+```bash
+dotnet tool update kamino
 ```
 
 or as a dotnet local tool
 
-``` bash
+```bash
 dotnet new tool-manifest
 dotnet tool install kamino
 ```
