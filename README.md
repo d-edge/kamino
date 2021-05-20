@@ -38,9 +38,10 @@ You can also get this with `dotnet kamino help`.
 ```sh
 Kamino                                GitLab Organisation Cloner
 ----------------------------------------------------------------
-Usage: kamino -b my-gitlab.com -o C:\Development\Git\ -g 42 -t xT0K3Nx4CC355x
+EXAMPLE: kamino -b my-gitlab.com -o C:\Development\Git\ -g 42 -t xT0K3Nx4CC355x
 
-USAGE: kamino [--help] --baseaddress <string> --group <string> --output <string> --token <string>
+USAGE: kamino [--help] --baseaddress <string> --group <string> --output <string> --token <string> [--include <string>]
+              [--exclude <string>] [--printonly]
 
 OPTIONS:
 
@@ -49,6 +50,11 @@ OPTIONS:
     --group, -g <string>  specify the group name or id to clone recursively
     --output, -o <string> specify the output folder to clone to
     --token, -t <string>  specify your access token
+    --include, -i <string>
+                          exclude all repositories but include matching
+    --exclude, -e <string>
+                          include all repositories but exclude matching
+    --printonly, -p       print theorical path without actually cloning
     --help                display this list of options.
 ```
 
