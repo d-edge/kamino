@@ -28,7 +28,7 @@ dotnet tool install kamino
 Run kamino:
 
 ```bash
-dotnet kamino -b my-gitlab.com -o C:\Development\Git\ -g 42 -t xT0K3Nx4CC355x
+kamino -b my-gitlab.com -o C:\Development\Git\ -g 42 -t xT0K3Nx4CC355x
 ```
 
 ## Usage
