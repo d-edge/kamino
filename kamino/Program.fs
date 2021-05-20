@@ -1,6 +1,5 @@
 open System
 open Argu
-open Argu.ArguAttributes
 open LibGit2Sharp
 open System.Text.Json.Serialization
 
@@ -28,6 +27,7 @@ let download token (url: string) =
 
 let deserialize (json: string) =
     Text.Json.JsonSerializer.Deserialize<seq<Project>> json
+
 // ?private_token={token} ???
 let inline buildUrl url group =
     $"https://{url}/api/v4/groups/{group}/projects?include_subgroups=true&simple=true&per_page=100&page=1"
@@ -35,7 +35,30 @@ let inline buildUrl url group =
 let insertToken baseAddress token (url: string) =
     url.Replace(baseAddress, $"oauth2:{token}@{baseAddress}")
 
-let cloneOrganisation baseAddress group path token printMode =
+let stringToSpan (s: string) =
+    System.ReadOnlySpan<char>(s.ToCharArray())
+
+// https://stackoverflow.com/q/30299671/1248177
+let matchWildcard pattern text =
+    IO.Enumeration.FileSystemName.MatchesSimpleExpression(stringToSpan pattern, stringToSpan text)
+
+let filterByPattern includePattern excludePattern (projects: seq<Project>) =
+    projects
+    |> Seq.filter
+        (fun { Path = path } ->
+            let shouldKeep =
+                match includePattern with
+                | Some pattern -> matchWildcard pattern path
+                | None -> true
+
+            if not shouldKeep then
+                false
+            else
+                match excludePattern with
+                | Some pattern -> matchWildcard pattern path |> not
+                | None -> true)
+
+let cloneOrganisation baseAddress group path token printMode includePattern excludePattern =
     let clone project =
         let url =
             insertToken baseAddress token project.Url
@@ -51,6 +74,7 @@ let cloneOrganisation baseAddress group path token printMode =
     buildUrl baseAddress group
     |> download token
     |> deserialize
+    |> filterByPattern includePattern excludePattern
     |> Seq.iter clone
 
 type Cmd =
@@ -58,6 +82,8 @@ type Cmd =
     | [<Mandatory; AltCommandLine("-g")>] Group of string
     | [<Mandatory; AltCommandLine("-o")>] Output of string
     | [<Mandatory; AltCommandLine("-t")>] Token of string
+    | [<AltCommandLine("-i")>] Include of string
+    | [<AltCommandLine("-e")>] Exclude of string
     | [<AltCommandLine("-p")>] PrintOnly
 
     interface Argu.IArgParserTemplate with
@@ -67,11 +93,13 @@ type Cmd =
             | Group _ -> "specify the group name or id to clone recursively"
             | Output _ -> "specify the output folder to clone to"
             | Token _ -> "specify your access token"
+            | Include _ -> "exclude all repositories but include matching"
+            | Exclude _ -> "include all repositories but exclude matching"
             | PrintOnly -> "print theorical path without actually cloning"
 
 let help = """Kamino                                GitLab Organisation Cloner
 ----------------------------------------------------------------
-Usage: kamino -b my-gitlab.com -o C:\Development\Git\ -g 42 -t xT0K3Nx4CC355x
+EXAMPLE: kamino -b my-gitlab.com -o C:\Development\Git\ -g 42 -t xT0K3Nx4CC355x
 """
 
 [<EntryPoint>]
@@ -104,9 +132,11 @@ let main argv =
         let group = cmd.GetResult Group
         let output = cmd.GetResult Output
         let token = cmd.GetResult Token
+        let includePattern = cmd.TryGetResult Include
+        let excludePattern = cmd.TryGetResult Exclude
         let printMode = cmd.Contains PrintOnly
 
-        cloneOrganisation baseAddress group output token printMode
+        cloneOrganisation baseAddress group output token printMode includePattern excludePattern
         0
     with :? Argu.ArguParseException ->
         printfn $"%s{help}"
