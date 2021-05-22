@@ -1,4 +1,4 @@
-# Kamino
+# ![logo](kamino.svg) Kamino
 
 Clone an organisation from GitLab
 
@@ -78,4 +78,5 @@ Help and feedback is always welcome and pull requests get accepted.
 
 ## License
 
-[MIT](./License)
+* [Marble icon](https://thenounproject.com/term/marble/1056965/) is licensed as Creative Commons CCBY by [Monjin Friends](https://thenounproject.com/monjin.friends/) from the [Noun Project](https://thenounproject.com).
+* [MIT](./License)
