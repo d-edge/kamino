@@ -3,23 +3,23 @@ open Argu
 open LibGit2Sharp
 open System.Text.Json.Serialization
 
-// # doc: https://docs.gitlab.com/ee/api/groups.html#list-a-groups-s-subgroups
-
 type Project =
     { [<JsonPropertyName("path_with_namespace")>]
       Path: string
+      [<JsonPropertyName("ssh_url_to_repo")>]
+      Ssh: string
       [<JsonPropertyName("http_url_to_repo")>]
       Url: string }
 
-let clone url path printMode =
-    if printMode then
-        printfn "%s" path
-    else
-        Repository.Clone(url, path) |> ignore
-        printfn "%s" path
+type CloneMode = 
+    | Http
+    | Ssh
+
+let (|?) = defaultArg
 
 let inline (</>) path1 path2 = IO.Path.Combine(path1, path2)
 
+// # doc: https://docs.gitlab.com/ee/api/groups.html#list-a-groups-s-subgroups
 let download token (url: string) =
     let client = new Net.WebClient()
     client.Headers.Set("PRIVATE-TOKEN", token)
@@ -29,44 +29,43 @@ let deserialize (json: string) =
     Text.Json.JsonSerializer.Deserialize<seq<Project>> json
 
 // ?private_token={token} ???
-let inline buildUrl url group =
-    $"https://{url}/api/v4/groups/{group}/projects?include_subgroups=true&simple=true&per_page=100&page=1"
-
-let insertToken baseAddress token (url: string) =
-    url.Replace(baseAddress, $"oauth2:{token}@{baseAddress}")
+let inline buildUrl (root: string) (group: string) =
+    $"https://{root}/api/v4/groups/{group}/projects?include_subgroups=true&simple=true&per_page=100&page=1"
 
 let stringToSpan (s: string) =
     System.ReadOnlySpan<char>(s.ToCharArray())
 
 // https://stackoverflow.com/q/30299671/1248177
-let matchWildcard pattern text =
-    IO.Enumeration.FileSystemName.MatchesSimpleExpression(stringToSpan pattern, stringToSpan text)
+let matchWildcard pattern path =
+    IO.Enumeration.FileSystemName.MatchesSimpleExpression(stringToSpan pattern, stringToSpan path)
 
-let patternPredicate (includePattern: string Option) (excludePattern: string Option) path =
+let shouldStay (includePattern: string Option) (excludePattern: string Option) path =
     (includePattern.IsNone || matchWildcard includePattern.Value path) &&
     (excludePattern.IsNone || not (matchWildcard excludePattern.Value path))  
 
 let filterByPattern (includePattern: string Option) (excludePattern: string Option) (paths: Project seq) :Project seq =
-    Seq.filter (fun { Path = path } -> patternPredicate includePattern excludePattern path) paths
+    paths |> Seq.filter (fun { Path = path } -> path |> shouldStay includePattern excludePattern)
 
-let cloneOrganisation baseAddress group path token printMode includePattern excludePattern =
-    let clone project =
-        let url =
-            insertToken baseAddress token project.Url
+let getUrl cloneMode root (token: string) project =
+    if cloneMode = Ssh
+    then project.Ssh
+    else project.Url.Replace(root, $"oauth2:{token}@{root}")
 
-        let target = path </> project.Path
-        clone url target printMode
+let cloneOrganisation root group directoryPath token printMode cloneMode includePattern excludePattern =
+    let projects =
+        buildUrl root group
+        |> download token
+        |> deserialize
+        |> filterByPattern includePattern excludePattern
 
     if printMode then
-        printfn "%s" "PrintMode: printonly"
+        printfn "%s" directoryPath
+        projects |> Seq.iter(fun {Path = path} -> directoryPath </> path |> printfn "%s") 
     else
-        IO.Directory.CreateDirectory path |> ignore
-
-    buildUrl baseAddress group
-    |> download token
-    |> deserialize
-    |> filterByPattern includePattern excludePattern
-    |> Seq.iter clone
+        IO.Directory.CreateDirectory directoryPath |> ignore
+        projects |> Seq.iter (fun project -> 
+            Repository.Clone(getUrl cloneMode root token project, directoryPath </> project.Path) |> printfn "%s"
+        )
 
 type Cmd =
     | [<Mandatory; AltCommandLine("-b")>] BaseAddress of string
@@ -75,6 +74,7 @@ type Cmd =
     | [<Mandatory; AltCommandLine("-t")>] Token of string
     | [<AltCommandLine("-i")>] Include of string
     | [<AltCommandLine("-e")>] Exclude of string
+    | [<AltCommandLine("-c")>] CloneMode of CloneMode
     | [<AltCommandLine("-p")>] PrintOnly
 
     interface Argu.IArgParserTemplate with
@@ -86,6 +86,7 @@ type Cmd =
             | Token _ -> "specify your access token"
             | Include _ -> "exclude all repositories but include matching"
             | Exclude _ -> "include all repositories but exclude matching"
+            | CloneMode _ -> "specify to clone through http or ssh"
             | PrintOnly -> "print theorical path without actually cloning"
 
 let help = """Kamino                                GitLab Organisation Cloner
@@ -125,9 +126,10 @@ let main argv =
         let token = cmd.GetResult Token
         let includePattern = cmd.TryGetResult Include
         let excludePattern = cmd.TryGetResult Exclude
+        let cloneMode = cmd.TryGetResult CloneMode |? Http
         let printMode = cmd.Contains PrintOnly
 
-        cloneOrganisation baseAddress group output token printMode includePattern excludePattern
+        cloneOrganisation baseAddress group output token printMode cloneMode includePattern excludePattern
         0
     with :? Argu.ArguParseException ->
         printfn $"%s{help}"
