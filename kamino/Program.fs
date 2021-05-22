@@ -42,21 +42,12 @@ let stringToSpan (s: string) =
 let matchWildcard pattern text =
     IO.Enumeration.FileSystemName.MatchesSimpleExpression(stringToSpan pattern, stringToSpan text)
 
-let filterByPattern includePattern excludePattern (projects: seq<Project>) =
-    projects
-    |> Seq.filter
-        (fun { Path = path } ->
-            let shouldKeep =
-                match includePattern with
-                | Some pattern -> matchWildcard pattern path
-                | None -> true
+let patternPredicate (includePattern: string Option) (excludePattern: string Option) path =
+    (includePattern.IsNone || matchWildcard includePattern.Value path) &&
+    (excludePattern.IsNone || not (matchWildcard excludePattern.Value path))  
 
-            if not shouldKeep then
-                false
-            else
-                match excludePattern with
-                | Some pattern -> matchWildcard pattern path |> not
-                | None -> true)
+let filterByPattern (includePattern: string Option) (excludePattern: string Option) (paths: Project seq) :Project seq =
+    Seq.filter (fun { Path = path } -> patternPredicate includePattern excludePattern path) paths
 
 let cloneOrganisation baseAddress group path token printMode includePattern excludePattern =
     let clone project =
