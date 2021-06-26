@@ -10,7 +10,20 @@
 
     <Copyright>Copyright 2021 © Alois de Gouvello. All rights reserved.</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+
+    <PackageId>kamino</PackageId>
+    <Description>A .NET Tool to clone git organisation</Description>
+    <Authors>aloisdg, D-EDGE</Authors>
+    <PackageTags>kamino git clone organisation</PackageTags>
+    <PackageIcon>logo.png</PackageIcon>
+
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/aloisdg/Kamino</RepositoryUrl>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../logo.png" Pack="true" PackagePath="\"/>
+  </ItemGroup> 
 
   <ItemGroup>
     <Compile Include="Program.fs" />
