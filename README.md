@@ -7,7 +7,7 @@
 <p align="center">
     <!--<a href="https://github.com/d-edge/kamino/actions" title="actions"><img src="https://github.com/d-edge/kamino/actions/workflows/build.yml/badge.svg?branch=main" alt="actions build" /></a>-->
     <a href="https://www.nuget.org/packages/Kamino/" title="nuget"><img src="https://img.shields.io/nuget/vpre/kamino" alt="version" /></a>
-    <!--<a href="https://www.nuget.org/stats/packages/Dedge.Cardidy?groupby=Version" title="stats"><img src="https://img.shields.io/nuget/dt/Dedge.Cardidy" alt="download" /></a>-->
+    <a href="https://www.nuget.org/stats/packages/Dedge.Cardidy?groupby=Version" title="stats"><img src="https://img.shields.io/nuget/dt/Dedge.Cardidy" alt="download" /></a>
     <a href="LICENSE" title="license"><img src="https://img.shields.io/github/license/d-edge/kamino" alt="license" /></a>
 </p>
 
