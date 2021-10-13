@@ -60,15 +60,19 @@ OPTIONS:
 
 ## Contributing
 
-Help and feedback is always welcome and pull requests get accepted.
+Help and feedback is always welcome and pull requests get accepted. 
 
-* First open an issue to discuss your changes
-* After your change has been formally approved please submit your PR against the develop branch
-* Please follow the code convention by examining existing code
-* Add/modify the README.md as required
+Here is the contribution flow ([more information on datascholl.io](https://www.dataschool.io/how-to-contribute-on-github/)):
+
+* Open or answer an issue to discuss the changes
+*  Fork the project after the change has been formally approved
+* Create a [feature branch](https://www.martinfowler.com/bliki/FeatureBranch.html)
+* Follow the code convention by examining existing code (mostly Microsoft's guidelines)
+* Edit the code with the changes
 * Add/modify unit tests as required
-* Please document your changes in the upcoming release notes in RELEASE_NOTES.md
-* PRs can only be approved and merged when all checks succeed (builds on Windows, MacOs and Linux)
+* Submit your PR against the main branch
+
+PRs can only be approved and merged when all checks succeed (builds on Windows, MacOs and Linux)
 
 ## Alternatives
 
