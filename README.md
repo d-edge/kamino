@@ -8,7 +8,7 @@
     <!--<a href="https://github.com/d-edge/kamino/actions" title="actions"><img src="https://github.com/d-edge/kamino/actions/workflows/build.yml/badge.svg?branch=main" alt="actions build" /></a>-->
     <a href="https://www.nuget.org/packages/Kamino/" title="nuget"><img src="https://img.shields.io/nuget/vpre/kamino" alt="version" /></a>
     <a href="https://www.nuget.org/stats/packages/kamino?groupby=Version" title="stats"><img src="https://img.shields.io/nuget/dt/kamino" alt="download" /></a>
-    <a href="LICENSE" title="license"><img src="https://img.shields.io/github/license/d-edge/kamino" alt="license" /></a>
+    <a href="https://github.com/d-edge/kamino/blob/main/License" title="license"><img src="https://img.shields.io/github/license/d-edge/kamino" alt="license" /></a>
 </p>
 
 <br />
@@ -96,4 +96,4 @@ PRs can only be approved and merged when all checks succeed (builds on Windows, 
 ## License
 
 * [Marble icon](https://thenounproject.com/term/marble/1056965/) is licensed as Creative Commons CCBY by [Monjin Friends](https://thenounproject.com/monjin.friends/) from the [Noun Project](https://thenounproject.com).
-* [MIT](./License)
+* [MIT](https://github.com/d-edge/kamino/blob/main/License)
